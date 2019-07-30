@@ -9,21 +9,18 @@ class BorderWrap extends Component {
     }
 }
 
-class IssueRow extends Component {
-    render() {
-        const boderStyle = {border: '1px solid silver', padding: 4};
-
-        return (
-            <tr>
-                
-                <td style={boderStyle}>{this.props.issue_id} </td>
-                <BorderWrap>
-                    <td style={boderStyle}>{this.props.children} </td>
-                </BorderWrap>
-            </tr>
-        )
+const issues = [
+    {
+        id: 1, status: 'Open', owner: 'Ravan',
+        created: new Date('2016-08-15'), effort: 5, completionDate: undefined,
+        title: 'error in console when clicking Add',
+    },
+    {
+        id: 2, status: 'Assigned', owner: 'Eddie',
+        created: new Date('2016-08-16'), effort: 14, completionDate: new Date('2016-08-30'),
+        title: 'Missing bottom border on panel'
     }
-}
+];
 
 class IssueFilter extends Component {
     render(){
@@ -38,18 +35,37 @@ class IssueFilter extends Component {
 class IssueTable extends Component {
     render(){
         const borderedStyle = {border: '1px solid silver', padding: 6}
+        const issueRows = this.props.issues.map(issue => <IssueRow key={issue.id} issue={issue} />)
         return (
-            <table style={{borderCollapse: 'collapse'}}>
+            <table className="bordered-table">
                 <thead>
-                    <th style={borderedStyle}>Id</th>
-                    <th style={borderedStyle}>Title</th>
+                    <th>Id</th>
+                    <th>Status</th>
+                    <th>Owner</th>
+                    <th>Created</th>
+                    <th>Effort</th>
+                    <th>Completion Date</th>
+                    <th>Title</th>
                 </thead>
-                <tbody>
-                    <IssueRow issue_id={1}>Error in the console when clicking add</IssueRow>
-                    
-                        <IssueRow issue_id={2}>Missing bottom border on panes</IssueRow>
-                </tbody>
+                <tbody> {issueRows} </tbody>
             </table>
+        )
+    }
+}
+
+class IssueRow extends Component {
+    render() {
+        const issue = this.props.issue;
+        return (
+            <tr>
+                <td>{issue.id}</td>
+                <td>{issue.status}</td>
+                <td>{issue.owner}</td>
+                <td>{issue.created.toDateString()}</td>
+                <td>{issue.effort}</td>
+                <td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
+                <td>{issue.title}</td>
+            </tr>
         )
     }
 }
@@ -71,7 +87,7 @@ export default class IssueList extends Component {
                 <h1>this is a placeholder for IssueList.</h1>
                 <IssueFilter />
                 <hr/>
-                <IssueTable />
+                <IssueTable issues={issues}/>
                 <hr/>
                 <IssueAdd />
             </div>
