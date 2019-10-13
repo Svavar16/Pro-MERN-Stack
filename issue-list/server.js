@@ -1,10 +1,10 @@
 const express = require('express');
 const bodyParser = require('body-parser');
-const PORT = 3000;
+const PORT = 4000;
 
 const app = express();
+app.use('/public', express.static('static'));
 app.use(bodyParser.json());
-app.use(express.static('static'));
 
 const issues = [
 	{

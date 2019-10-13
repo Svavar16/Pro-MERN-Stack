@@ -13,13 +13,25 @@ class IssueFilter extends Component {
 	}
 }
 
-class IssueTable extends Component {
-	render() {
-		const borderedStyle = { border: '1px solid silver', padding: 6 };
-		const issueRows = this.props.issues.map((issue) => <IssueRow key={issue.id} issue={issue} />);
-		return (
-			<table className="bordered-table">
-				<thead>
+const IssueRow = (props)  => (
+	<tr>
+		<td>{props.issue.id}</td>
+		<td>{props.issue.status}</td>
+		<td>{props.issue.owner}</td>
+		<td>{props.issue.created.toDateString()}</td>
+		<td>{props.issue.effort}</td>
+		<td>{props.issue.completionDate ? props.issue.completionDate.toDateString() : ''}</td>
+		<td>{props.issue.title}</td>
+	</tr>
+);
+
+function IssueTable(props){
+	const borderedStyle = { border: '1px solid silver', padding: 6 };
+	const issueRows = props.issues.map((issue) => <IssueRow key={issue.id} issue={issue} />);
+	return (
+		<table className="bordered-table">
+			<thead>
+				<tr>
 					<th>Id</th>
 					<th>Status</th>
 					<th>Owner</th>
@@ -27,29 +39,13 @@ class IssueTable extends Component {
 					<th>Effort</th>
 					<th>Completion Date</th>
 					<th>Title</th>
-				</thead>
-				<tbody> {issueRows} </tbody>
-			</table>
-		);
-	}
+				</tr>
+			</thead>
+			<tbody>{issueRows}</tbody>
+		</table>
+	);
 }
 
-class IssueRow extends Component {
-	render() {
-		const issue = this.props.issue;
-		return (
-			<tr>
-				<td>{issue.id}</td>
-				<td>{issue.status}</td>
-				<td>{issue.owner}</td>
-				<td>{issue.created.toDateString()}</td>
-				<td>{issue.effort}</td>
-				<td>{issue.completionDate ? issue.completionDate.toDateString() : ''}</td>
-				<td>{issue.title}</td>
-			</tr>
-		);
-	}
-}
 
 class IssueAdd extends Component {
 	constructor() {
@@ -97,22 +93,36 @@ class IssueList extends Component {
 	}
 
 	loadData() {
+		fetch('/api/issues').then(response =>
+			response.json()
+		).then(data => {
+			console.log("Total count of records:", data._metadata.total_count);
+			data.records.forEach(issue => {
+				console.log(data.records);
+				issue.created = new Date(issue.created);
+				if (issue.completionDate)
+					issue.completionDate = new Date(issue.completionDate);
+			});
+			this.setState({ issues: data.records });
+		}).catch(err => {
+			console.log(err);
+		});
+		/*
 		fetch('/api/issues')
-			.then((response) => response.json)
-			.then((data) => {
+			.then(response => response.json())
+			.then(data => {
 				console.log('Total count of records', data._metadata.total_count);
 				data.records
-					.forEach((issue) => {
+					.forEach(issue => {
 						issue.created = new Date(issue.created);
 						if (issue.completionDate) {
 							issue.completionDate = new Date(issue.completionDate);
 						}
-					})
-					.this.setState({ issues: data.records });
+					});this.setState({ issues: data.records });
 			})
 			.catch((err) => {
 				console.log(err);
-			});
+			});*/
 	}
 
 	createIssue(newIssue) {
